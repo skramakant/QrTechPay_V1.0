@@ -1,11 +1,13 @@
 package qrtech.qrtechpay;
 
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     String result;
     SharedPreferences sharedPref;
     Context context;
+    DbHelper dbHelper;
+    SQLiteDatabase db;
     //boolean isZxingInstalled;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +36,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //textView = (TextView)findViewById(R.id.textView);
         scanButton = (Button)findViewById(R.id.scan);
-
         context = this;
+        dbHelper = new DbHelper(this);
+        db = dbHelper.getWritableDatabase();
         sharedPref = context.getSharedPreferences("STORE_DATA", Context.MODE_PRIVATE);
 
         //SharedPreferences sharedPref = context.getPreferences(Context.MODE_PRIVATE);
@@ -68,6 +73,20 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString("result", result);
                 editor.commit();
+
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(C.CARD_BANK_NAME,"ICICI");
+                contentValues.put(C.CARD_CVV,"786");
+                contentValues.put(C.CARD_NAME,"RAMAKANT KUSHWAHA");
+                contentValues.put(C.CARD_NUMBER,"622018320000954");
+                contentValues.put(C.CARD_TYPE,"CREDIT");
+                contentValues.put(C.CARD_VALID_FROM,"06/11");
+                contentValues.put(C.CARD_VALID_THRU,"06/20");
+
+                db.insert(C.TABLE_NAME,null,contentValues);
+                db.close();
+
+
             } else if (resultCode == RESULT_CANCELED) {
                 //tvStatus.setText("Press a button to start a scan.");
                 textView.setText("Scan cancelled.");
