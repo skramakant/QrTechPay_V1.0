@@ -14,7 +14,5 @@ public class DbQuery {
         mContext = context;
     }
 
-    DbHelper dbHelper = new DbHelper(mContext);
-    SQLiteDatabase db = dbHelper.getWritableDatabase();
 
 }

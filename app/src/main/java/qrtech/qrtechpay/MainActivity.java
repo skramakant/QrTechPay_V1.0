@@ -5,8 +5,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
@@ -27,8 +29,8 @@ public class MainActivity extends AppCompatActivity {
     String result;
     SharedPreferences sharedPref;
     Context context;
-    DbHelper dbHelper;
-    SQLiteDatabase db;
+    //DbHelper dbHelper;
+    //SQLiteDatabase db;
     //boolean isZxingInstalled;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +39,9 @@ public class MainActivity extends AppCompatActivity {
         //textView = (TextView)findViewById(R.id.textView);
         scanButton = (Button)findViewById(R.id.scan);
         context = this;
-        dbHelper = new DbHelper(this);
-        db = dbHelper.getWritableDatabase();
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        //dbHelper = new DbHelper(this);
+        //db = dbHelper.getWritableDatabase();
         sharedPref = context.getSharedPreferences("STORE_DATA", Context.MODE_PRIVATE);
 
         //SharedPreferences sharedPref = context.getPreferences(Context.MODE_PRIVATE);
@@ -46,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         TextView tvStatus=(TextView)findViewById(R.id.textView);
-        tvStatus.setText(sharedPref.getString("result","No Data"));
+        tvStatus.setText(sharedPref.getString("result", "No Data"));
 
 
         scanButton.setOnClickListener(new View.OnClickListener() {
@@ -56,6 +59,27 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
                 //intent.putExtra("SCAN_FORMATS", "CODE_39,CODE_93,CODE_128,DATA_MATRIX,ITF,CODABAR");
                 startActivityForResult(intent, 0);
+            }
+        });
+
+        Button showdata = (Button)findViewById(R.id.button);
+        showdata.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SQLiteDatabase db = new DbHelper(getApplicationContext()).getWritableDatabase();
+                db.create(null);
+                Cursor  cursor = db.rawQuery("select * from CARD_TABLE", null);
+                if(cursor != null){
+                    if (cursor.moveToFirst()){
+                        //place = cursor.getString( cursor.getColumnIndex("PLACE"));
+                        String cardName=cursor.getString(cursor.getColumnIndex(C.CARD_NAME));
+                        Toast.makeText(MainActivity.this,cardName,Toast.LENGTH_LONG).show();
+                    }
+                int a = cursor.getCount();
+                }
+                //String cardName=cursor.getString(cursor.getColumnIndex(C.CARD_NAME));
+                //Toast.makeText(MainActivity.this,cardName,Toast.LENGTH_LONG).show();
+
             }
         });
 
@@ -74,6 +98,10 @@ public class MainActivity extends AppCompatActivity {
                 editor.putString("result", result);
                 editor.commit();
 
+                DbHelper dbHelper = new DbHelper(this);
+                SQLiteDatabase db = new DbHelper(this).getWritableDatabase();
+                db.create(null);
+
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(C.CARD_BANK_NAME,"ICICI");
                 contentValues.put(C.CARD_CVV,"786");
@@ -81,12 +109,23 @@ public class MainActivity extends AppCompatActivity {
                 contentValues.put(C.CARD_NUMBER,"622018320000954");
                 contentValues.put(C.CARD_TYPE,"CREDIT");
                 contentValues.put(C.CARD_VALID_FROM,"06/11");
-                contentValues.put(C.CARD_VALID_THRU,"06/20");
+                contentValues.put(C.CARD_VALID_THRU, "06/20");
 
-                db.insert(C.TABLE_NAME,null,contentValues);
+
+                if(db.isOpen()){
+                    Toast.makeText(MainActivity.this,"database open successfully",Toast.LENGTH_LONG).show();
+                }
+               long var = db.insert(C.TABLE_NAME, null, contentValues);
+                if(var > 0){
+                    Toast.makeText(MainActivity.this,"Values Successfully Inserted in Table",Toast.LENGTH_LONG).show();
+                }
+
+                //Cursor cursor = db.query(C.TABLE_NAME,null, null, null, null, null, null);
+                //Cursor  cursor = db.rawQuery("select * from CARD_TABLE", null);
+                //int a = cursor.getCount();
+                //String cardName=cursor.getString(cursor.getColumnIndex(C.CARD_NAME));
+                //Toast.makeText(MainActivity.this,cardName,Toast.LENGTH_LONG).show();
                 db.close();
-
-
             } else if (resultCode == RESULT_CANCELED) {
                 //tvStatus.setText("Press a button to start a scan.");
                 textView.setText("Scan cancelled.");
@@ -116,20 +155,6 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-/*    @Override
-    protected void onResume() {
-        TextView tvStatus=(TextView)findViewById(R.id.textView);
-        tvStatus.setText(result);
-        super.onResume();
-    }*/
-
-/*    @Override
-    protected void onRestart() {
-        TextView tvStatus=(TextView)findViewById(R.id.textView);
-        tvStatus.setText(result);
-        super.onRestart();
-    }*/
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {

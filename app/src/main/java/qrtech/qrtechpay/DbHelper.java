@@ -13,16 +13,16 @@ public class DbHelper extends SQLiteOpenHelper{
     public static final String DATABASE_NAME = "CardDetails.db";
 
     DbHelper(Context context) {
-        super(context, context.getExternalFilesDir(null).getAbsolutePath() + "/" + DATABASE_NAME, null, DATABASE_VERSION);
+        super(context,context.getExternalFilesDir(null).getAbsolutePath() + "/" +DATABASE_NAME, null, DATABASE_VERSION);
     }
 
 /*    public DbHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, context.getExternalFilesDir(null).getAbsolutePath() + "/" + DATABASE_NAME, null, DATABASE_VERSION);
     }*/
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(C.TABLE_NAME);
+        db.execSQL(C.SQL_CREATE_TABLE);
     }
 
     @Override
