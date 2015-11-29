@@ -188,10 +188,7 @@ public class MainActivity extends AppCompatActivity {
             builder.setMessage("You are going to pay 5000rs").setTitle("Do you want to proceed");
             builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
-                    progressDialog.setMessage("We are Processing your request");
-                    progressDialog.setTitle("Payment in progress");
-                    progressDialog.show();
+                    showProgressDialog();
 
                     //when payment done successfully a call back hit
                     //and then we can dismiss this progress dialog
@@ -222,11 +219,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void insertRowToDB(ContentValues values) {
-/*        SQLiteDatabase db = new DbHelper(this).getWritableDatabase();
-        db.create(null);
-        if (db.isOpen()) {
-            Toast.makeText(MainActivity.this, "database open successfully", Toast.LENGTH_LONG).show();
-        }*/
         SQLiteDatabase db = openDB(this);
         long var = db.insert(C.TABLE_NAME, null, values);
         if (var > 0) {
@@ -256,6 +248,14 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "database open successfully", Toast.LENGTH_LONG).show();
         }
         return db;
+    }
+    public void showProgressDialog(){
+        ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setMessage("We are Processing your request");
+        progressDialog.setTitle("Payment in progress");
+        progressDialog.show();
+        //progress Dialog will dismiss on call back
+        //on Successful Transaction
     }
 
 }

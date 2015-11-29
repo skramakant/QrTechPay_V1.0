@@ -1,6 +1,7 @@
 package qrtech.qrtechpay;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ public class LoginDialogFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         // sign in the user ...
+                        showProgressDialog();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -35,5 +37,13 @@ public class LoginDialogFragment extends DialogFragment {
                     }
                 });
         return builder.create();
+    }
+    public void showProgressDialog(){
+        ProgressDialog progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("We are Processing your request");
+        progressDialog.setTitle("Payment in progress");
+        progressDialog.show();
+        //progress Dialog will dismiss on call back
+        //on Successful Transaction
     }
 }
