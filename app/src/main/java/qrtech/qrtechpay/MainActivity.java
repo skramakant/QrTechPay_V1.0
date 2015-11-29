@@ -1,6 +1,7 @@
 package qrtech.qrtechpay;
 
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -16,9 +17,11 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.CountDownTimer;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     String result;
     SharedPreferences sharedPref;
     Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,11 +69,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button showdata = (Button) findViewById(R.id.Login);
-        showdata.setOnClickListener(new View.OnClickListener() {
+        Button login = (Button) findViewById(R.id.Login);
+        login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SQLiteDatabase db = new DbHelper(getApplicationContext()).getWritableDatabase();
+/*                SQLiteDatabase db = new DbHelper(getApplicationContext()).getWritableDatabase();
                 db.create(null);
                 //Cursor cursor = db.rawQuery("select * from CARD_TABLE", null);
                 Cursor cursor = db.query(C.TABLE_NAME,null,null,null,null,null,null);
@@ -78,12 +82,15 @@ public class MainActivity extends AppCompatActivity {
                         String cardName = cursor.getString(cursor.getColumnIndex(C.CARD_NAME));
                         Toast.makeText(MainActivity.this, cardName, Toast.LENGTH_LONG).show();
                     }
-                    int a = cursor.getCount();
-                }
-                //String cardName=cursor.getString(cursor.getColumnIndex(C.CARD_NAME));
-                //Toast.makeText(MainActivity.this,cardName,Toast.LENGTH_LONG).show();
+                    int a = cursor.getCount();*/
 
+                DialogFragment newFragment = new LoginDialogFragment();
+                newFragment.show(getSupportFragmentManager(), "LoginDialog");
             }
+            //String cardName=cursor.getString(cursor.getColumnIndex(C.CARD_NAME));
+            //Toast.makeText(MainActivity.this,cardName,Toast.LENGTH_LONG).show();
+
+
         });
 
     }
@@ -118,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
             } else if (resultCode == RESULT_CANCELED) {
                 //tvStatus.setText("Press a button to start a scan.");
-                textView.setText("Scan cancelled.");
+                //textView.setText("Scan cancelled.");
             }
         }
 
@@ -155,52 +162,66 @@ public class MainActivity extends AppCompatActivity {
         newResponse = newResponse.replace("\n", "").replace("\r", "");
         JSONArray jsonArray = new JSONArray(newResponse);
         //for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonData = jsonArray.getJSONObject(0);
-            String cardName = jsonData.getString(C.CARD_NAME);
-            String cardNumber = jsonData.getString(C.CARD_NUMBER);
-            String cardBankName = jsonData.getString(C.CARD_BANK_NAME);
-            String cardType = jsonData.getString(C.CARD_TYPE);
-            String cardValidThro = jsonData.getString(C.CARD_VALID_THRU);
-            String cardValidFrom = jsonData.getString(C.CARD_VALID_FROM);
-            String cardCvv = jsonData.getString(C.CARD_CVV);
-            ContentValues cardValues = new ContentValues();
-            cardValues.put(C.CARD_NAME, cardName);
-            cardValues.put(C.CARD_BANK_NAME, cardBankName);
-            cardValues.put(C.CARD_CVV, cardCvv);
-            cardValues.put(C.CARD_NUMBER, cardNumber);
-            cardValues.put(C.CARD_TYPE, cardType);
-            cardValues.put(C.CARD_VALID_FROM, cardValidFrom);
-            cardValues.put(C.CARD_VALID_THRU, cardValidThro);
+        JSONObject jsonData = jsonArray.getJSONObject(0);
+        String cardName = jsonData.getString(C.CARD_NAME);
+        String cardNumber = jsonData.getString(C.CARD_NUMBER);
+        String cardBankName = jsonData.getString(C.CARD_BANK_NAME);
+        String cardType = jsonData.getString(C.CARD_TYPE);
+        String cardValidThro = jsonData.getString(C.CARD_VALID_THRU);
+        String cardValidFrom = jsonData.getString(C.CARD_VALID_FROM);
+        String cardCvv = jsonData.getString(C.CARD_CVV);
+        ContentValues cardValues = new ContentValues();
+        cardValues.put(C.CARD_NAME, cardName);
+        cardValues.put(C.CARD_BANK_NAME, cardBankName);
+        cardValues.put(C.CARD_CVV, cardCvv);
+        cardValues.put(C.CARD_NUMBER, cardNumber);
+        cardValues.put(C.CARD_TYPE, cardType);
+        cardValues.put(C.CARD_VALID_FROM, cardValidFrom);
+        cardValues.put(C.CARD_VALID_THRU, cardValidThro);
 
-            if(isDataPresentInDb(cardValues)){
-                //CustomDialogClass cdd = new CustomDialogClass(MainActivity.this);
-                //cdd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                //cdd.show();
+        if (isDataPresentInDb(cardValues)) {
+/*                CustomDialogClass cdd = new CustomDialogClass(MainActivity.this);
+                cdd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                cdd.show();*/
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("You are going to pay 5000rs").setTitle("Do you want to proceed");
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
-                        progressDialog.setMessage("We are Processing your request");
-                        progressDialog.setTitle("Payment in progress");
-                        progressDialog.show();
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }
-            insertRowToDB(cardValues);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("You are going to pay 5000rs").setTitle("Do you want to proceed");
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+                    progressDialog.setMessage("We are Processing your request");
+                    progressDialog.setTitle("Payment in progress");
+                    progressDialog.show();
+
+                    //when payment done successfully a call back hit
+                    //and then we can dismiss this progress dialog
+                }
+            });
+            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // User cancelled the dialog
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else {
+            new AlertDialog.Builder(context)
+                    .setTitle("Error")
+                    .setMessage("Invalid Card Details!! Try Again")
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // continue with delete
+                        }
+                    })
+                    .show();
+        }
+        insertRowToDB(cardValues);
 
         //}
 
     }
-    public void insertRowToDB(ContentValues values){
+
+    public void insertRowToDB(ContentValues values) {
 /*        SQLiteDatabase db = new DbHelper(this).getWritableDatabase();
         db.create(null);
         if (db.isOpen()) {
@@ -214,21 +235,21 @@ public class MainActivity extends AppCompatActivity {
         db.close();
     }
 
-    public boolean isDataPresentInDb(ContentValues values){
+    public boolean isDataPresentInDb(ContentValues values) {
         SQLiteDatabase db = openDB(this);
-        String[] columns = { C.CARD_NUMBER };
+        String[] columns = {C.CARD_NUMBER};
         String selection = C.CARD_NUMBER + " =?";
-        String[] selectionArgs = { values.getAsString(C.CARD_NUMBER) };
+        String[] selectionArgs = {values.getAsString(C.CARD_NUMBER)};
         String limit = "1";
         Cursor cursor = db.query(C.TABLE_NAME, columns, selection, selectionArgs, null, null, null, limit);
-        if(cursor.moveToFirst()){
-            Toast.makeText(MainActivity.this,"Record Exist In Database",Toast.LENGTH_LONG).show();
+        if (cursor.moveToFirst()) {
+            Toast.makeText(MainActivity.this, "Record Exist In Database", Toast.LENGTH_LONG).show();
             return true;
         }
         return false;
     }
 
-    public SQLiteDatabase openDB(Context context){
+    public SQLiteDatabase openDB(Context context) {
         SQLiteDatabase db = new DbHelper(this).getWritableDatabase();
         db.create(null);
         if (db.isOpen()) {

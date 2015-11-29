@@ -42,15 +42,10 @@ public class CustomDialogClass extends Dialog implements
         switch (v.getId()) {
             case R.id.btn_yes:
                 //c.finish();
-                final ProgressDialog progressDialog = new ProgressDialog(getContext());
+                ProgressDialog progressDialog = new ProgressDialog(getContext());
                 progressDialog.setMessage("We are Processing your request");
                 progressDialog.setTitle("Payment in progress");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressDialog.show();
-                    }
-                });
+                progressDialog.show();
 
                 //Toast.makeText(CustomDialogClass.this,"We are processing your request",Toast.LENGTH_LONG).show();
                 break;
