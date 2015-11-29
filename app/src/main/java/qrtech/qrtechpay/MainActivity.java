@@ -10,6 +10,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -55,8 +57,10 @@ public class MainActivity extends AppCompatActivity {
         //SharedPreferences sharedPref = context.getPreferences(Context.MODE_PRIVATE);
 
 
+/*
         TextView tvStatus = (TextView) findViewById(R.id.textView);
         tvStatus.setText(sharedPref.getString("result", "No Data"));
+*/
 
 
         scanButton.setOnClickListener(new View.OnClickListener() {
@@ -69,13 +73,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button showdata = (Button) findViewById(R.id.button);
+        Button showdata = (Button) findViewById(R.id.Login);
         showdata.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SQLiteDatabase db = new DbHelper(getApplicationContext()).getWritableDatabase();
                 db.create(null);
-                Cursor cursor = db.rawQuery("select * from CARD_TABLE", null);
+                //Cursor cursor = db.rawQuery("select * from CARD_TABLE", null);
+                Cursor cursor = db.query(C.TABLE_NAME,null,null,null,null,null,null);
                 if (cursor != null) {
                     if (cursor.moveToFirst()) {
                         //place = cursor.getString( cursor.getColumnIndex("PLACE"));
@@ -98,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
                 //tvStatus.setText(intent.getStringExtra("SCAN_RESULT_FORMAT"));
-                TextView tvStatus = (TextView) findViewById(R.id.textView);
+                TextView tvStatus = (TextView) findViewById(R.id.abc);
                 tvStatus.setText(data.getStringExtra("SCAN_RESULT"));
                 result = data.getStringExtra("SCAN_RESULT");
                 try {
@@ -212,17 +217,23 @@ public class MainActivity extends AppCompatActivity {
             cardValues.put(C.CARD_VALID_FROM, cardValidFrom);
             cardValues.put(C.CARD_VALID_THRU, cardValidThro);
 
+            if(isDataPresentInDb(cardValues)){
+                CustomDialogClass cdd = new CustomDialogClass(MainActivity.this);
+                cdd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                cdd.show();
+            }
             insertRowToDB(cardValues);
 
         //}
 
     }
     public void insertRowToDB(ContentValues values){
-        SQLiteDatabase db = new DbHelper(this).getWritableDatabase();
+/*        SQLiteDatabase db = new DbHelper(this).getWritableDatabase();
         db.create(null);
         if (db.isOpen()) {
             Toast.makeText(MainActivity.this, "database open successfully", Toast.LENGTH_LONG).show();
-        }
+        }*/
+        SQLiteDatabase db = openDB(this);
         long var = db.insert(C.TABLE_NAME, null, values);
         if (var > 0) {
             Toast.makeText(MainActivity.this, "Values Successfully Inserted in Table", Toast.LENGTH_LONG).show();
@@ -230,4 +241,26 @@ public class MainActivity extends AppCompatActivity {
         db.close();
     }
 
+    public boolean isDataPresentInDb(ContentValues values){
+        SQLiteDatabase db = openDB(this);
+        String[] columns = { C.CARD_NUMBER };
+        String selection = C.CARD_NUMBER + " =?";
+        String[] selectionArgs = { values.getAsString(C.CARD_NUMBER) };
+        String limit = "1";
+        Cursor cursor = db.query(C.TABLE_NAME,columns,selection,selectionArgs,null,null,null,limit);
+        if(cursor.moveToFirst()){
+            Toast.makeText(MainActivity.this,"Record Exist In Database",Toast.LENGTH_LONG).show();
+            return true;
+        }
+        return false;
+    }
+
+    public SQLiteDatabase openDB(Context context){
+        SQLiteDatabase db = new DbHelper(this).getWritableDatabase();
+        db.create(null);
+        if (db.isOpen()) {
+            Toast.makeText(MainActivity.this, "database open successfully", Toast.LENGTH_LONG).show();
+        }
+        return db;
+    }
 }
