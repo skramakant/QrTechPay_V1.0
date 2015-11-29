@@ -41,11 +41,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button scanButton;
-    TextView textView;
-    String result;
-    SharedPreferences sharedPref;
-    Context context;
+    private Button scanButton;
+    private TextView textView;
+    private String result;
+    protected SharedPreferences sharedPref;
+    private Context context;
+    private boolean isPresent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         scanButton = (Button) findViewById(R.id.scan);
         context = this;
+        isPresent = false;
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         sharedPref = context.getSharedPreferences("STORE_DATA", Context.MODE_PRIVATE);
 /*
@@ -179,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
         cardValues.put(C.CARD_VALID_THRU, cardValidThro);
 
         if (isDataPresentInDb(cardValues)) {
+            isPresent = true;
 /*                CustomDialogClass cdd = new CustomDialogClass(MainActivity.this);
                 cdd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 cdd.show();*/
@@ -200,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog dialog = builder.create();
             dialog.show();
         } else {
+            isPresent = false;
             new AlertDialog.Builder(context)
                     .setTitle("Error")
                     .setMessage("Invalid Card Details!! Try Again")
@@ -210,7 +214,10 @@ public class MainActivity extends AppCompatActivity {
                     })
                     .show();
         }
-        insertRowToDB(cardValues);
+        if(!(isPresent)){
+            insertRowToDB(cardValues);
+        }
+        //insertRowToDB(cardValues);
 
         //}
 
@@ -257,3 +264,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
+
+/************************************Test Data*********************************/
+/**
+ * [{"CARD_NAME":"wrong card","CARD_NUMBER":"1182222412554555",
+ "CARD_BANK_NAME":"HDFC",
+ "CARD_TYPE":"CREDIT",
+ "CARD_VALID_THRU":"01/16",
+ "CARD_VALID_FROM":"01/16",
+ "CARD_CVV":"726"}
+ ]
+ *
+ ******************************************************************************/
