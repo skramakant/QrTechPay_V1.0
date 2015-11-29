@@ -267,6 +267,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 /************************************Test Data*********************************/
+//first install the Barcode Scanner in your mobile from google play,because we are using it for scanning purpose
 /** make QR code in this format
  * [{"CARD_NAME":"wrong card","CARD_NUMBER":"1182222412554555",
  "CARD_BANK_NAME":"HDFC",
