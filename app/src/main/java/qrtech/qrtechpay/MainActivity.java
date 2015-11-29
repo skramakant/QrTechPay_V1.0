@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString("result", result);
                 editor.commit();
-
 /*                ContentValues contentValues = new ContentValues();
                 contentValues.put(C.CARD_BANK_NAME, "ICICI");
                 contentValues.put(C.CARD_CVV, "786");
@@ -189,7 +188,6 @@ public class MainActivity extends AppCompatActivity {
             builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     showProgressDialog();
-
                     //when payment done successfully a call back hit
                     //and then we can dismiss this progress dialog
                 }
