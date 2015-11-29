@@ -116,8 +116,8 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
                 //tvStatus.setText(intent.getStringExtra("SCAN_RESULT_FORMAT"));
-                TextView tvStatus = (TextView) findViewById(R.id.abc);
-                tvStatus.setText(data.getStringExtra("SCAN_RESULT"));
+                //TextView tvStatus = (TextView) findViewById(R.id.abc);
+                //tvStatus.setText(data.getStringExtra("SCAN_RESULT"));
                 result = data.getStringExtra("SCAN_RESULT");
                 try {
                     addCardDetailsToDb(result);
@@ -127,15 +127,6 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString("result", result);
                 editor.commit();
-/*                ContentValues contentValues = new ContentValues();
-                contentValues.put(C.CARD_BANK_NAME, "ICICI");
-                contentValues.put(C.CARD_CVV, "786");
-                contentValues.put(C.CARD_NAME, "RAMAKANT KUSHWAHA");
-                contentValues.put(C.CARD_NUMBER, "622018320000954");
-                contentValues.put(C.CARD_TYPE, "CREDIT");
-                contentValues.put(C.CARD_VALID_FROM, "06/11");
-                contentValues.put(C.CARD_VALID_THRU, "06/20");*/
-
 
             } else if (resultCode == RESULT_CANCELED) {
                 //tvStatus.setText("Press a button to start a scan.");
