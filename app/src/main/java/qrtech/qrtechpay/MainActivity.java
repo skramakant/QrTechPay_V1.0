@@ -267,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 /************************************Test Data*********************************/
-/**
+/** make QR code in this format
  * [{"CARD_NAME":"wrong card","CARD_NUMBER":"1182222412554555",
  "CARD_BANK_NAME":"HDFC",
  "CARD_TYPE":"CREDIT",
